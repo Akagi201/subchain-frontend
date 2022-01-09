@@ -47,18 +47,20 @@ export function Main (props) {
     // Polkadot-JS API query to the `proofs` storage item in our pallet.
     // This is a subscription, so it will always get the latest value,
     // even if it changes.
-    api.query.PoeModule.proofs(digest, result => {
-      // Our storage item returns a tuple, which is represented as an array.
-      setOwner(result[0].toString());
-      setBlock(result[1].toNumber());
-    }).then(unsub => {
-      unsubscribe = unsub;
-    });
+    api.query.poeModule
+      .proofs(digest, result => {
+        // Our storage item returns a tuple, which is represented as an array.
+        setOwner(result[0].toString());
+        setBlock(result[1].toNumber());
+      })
+      .then(unsub => {
+        unsubscribe = unsub;
+      });
     return () => unsubscribe && unsubscribe();
     // This tells the React hook to update whenever the file digest changes
     // (when a new file is chosen), or when the storage subscription says the
     // value of the storage item has updated.
-  }, [digest, api.query.PoeModule]);
+  }, [digest, api.query.poeModule]);
 
   // We can say a file digest is claimed if the stored block number is not 0
   function isClaimed () {
@@ -98,7 +100,7 @@ export function Main (props) {
             type="SIGNED-TX"
             disabled={isClaimed() || !digest}
             attrs={{
-              palletRpc: 'PoeModule',
+              palletRpc: 'poeModule',
               callable: 'createClaim',
               inputParams: [digest],
               paramFields: [true]
@@ -112,7 +114,7 @@ export function Main (props) {
             type="SIGNED-TX"
             disabled={!isClaimed() || owner !== accountPair.address}
             attrs={{
-              palletRpc: 'PoeModule',
+              palletRpc: 'poeModule',
               callable: 'revokeClaim',
               inputParams: [digest],
               paramFields: [true]
@@ -128,7 +130,9 @@ export function Main (props) {
 
 export default function PoeModule (props) {
   const { api } = useSubstrate();
-  return api.query.PoeModule && api.query.PoeModule.proofs
-    ? <Main {...props} />
+  return api.query.poeModule && api.query.poeModule.proofs
+    ? (
+    <Main {...props} />
+      )
     : null;
 }
