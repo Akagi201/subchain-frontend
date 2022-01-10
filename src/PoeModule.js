@@ -50,8 +50,13 @@ export function Main (props) {
     api.query.poeModule
       .proofs(digest, result => {
         // Our storage item returns a tuple, which is represented as an array.
-        setOwner(result[0].toString());
-        setBlock(result[1].toNumber());
+        if (result.toHuman() != null) {
+          console.log('result: ', result.toHuman());
+          setOwner(result.toHuman()[0]);
+          setBlock(parseInt(result.toHuman()[1], 10));
+        } else {
+          console.log('result is null');
+        }
       })
       .then(unsub => {
         unsubscribe = unsub;
